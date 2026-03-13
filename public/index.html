@@ -25,14 +25,20 @@
       justify-content: space-between;
     }
 
-    header h1 {
-      font-size: 2.4rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
+    .header-logo {
+      height: 72px;
+      width: auto;
+      display: block;
+      object-fit: contain;
     }
 
-    /* Calendar-style date widget */
+    /* Calendar-style date widgets */
+    .cal-widgets {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
     .cal-widget {
       display: flex;
       flex-direction: column;
@@ -40,7 +46,7 @@
       border: 1.5px solid #e0e0e0;
       border-radius: 12px;
       overflow: hidden;
-      min-width: 100px;
+      min-width: 90px;
     }
 
     .cal-top {
@@ -74,6 +80,69 @@
       font-weight: 400;
       color: #888;
       margin-top: 2px;
+    }
+
+    /* ── Countdown timer ────────────────────────────── */
+    .countdown-bar {
+      background: #000;
+      color: #fff;
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .countdown-label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .countdown-display {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .countdown-time {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .countdown-unit {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .countdown-sep {
+      font-size: 2.4rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.3);
+      line-height: 1;
+      margin: 0 2px;
+    }
+
+    .countdown-unit-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-left: 2px;
+    }
+
+    .countdown-urgency {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #FF6B00;
     }
 
     /* ── Bonus banner ───────────────────────────────── */
@@ -143,6 +212,68 @@
       opacity: 0.75;
     }
 
+    /* ── Latest close ticker ────────────────────────── */
+    .ticker-wrap {
+      display: flex;
+      align-items: stretch;
+      background: #111;
+      border-bottom: 3px solid #FF6B00;
+      height: 68px;
+      overflow: hidden;
+    }
+
+    .ticker-label {
+      background: #FF6B00;
+      color: #fff;
+      font-size: 0.88rem;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0 22px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .ticker-overflow {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: ticker-scroll 28s linear infinite;
+    }
+
+    .ticker-track.paused { animation-play-state: paused; }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      padding-right: 120px;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .ticker-star  { color: #FF6B00; font-size: 1.3rem; }
+    .ticker-rep   { color: #fff; }
+    .ticker-dot   { color: rgba(255,255,255,0.25); font-weight: 300; }
+    .ticker-date  { color: rgba(255,255,255,0.5); font-weight: 500; font-size: 1.25rem; }
+
+    @keyframes ticker-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
     /* ── Table ──────────────────────────────────────── */
     table {
       width: 100%;
@@ -157,9 +288,9 @@
     col.col-tier  { width: 13%; }
 
     thead th {
-      font-size: 0.82rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      letter-spacing: 0.13em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: #888;
       padding: 12px 14px;
@@ -201,10 +332,15 @@
       font-size: 2rem;
       font-weight: 300;
       color: #ccc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      vertical-align: middle;
     }
-    .pos.p1 { color: #000; font-weight: 800; font-size: 2.4rem; }
-    .pos.p2 { color: #333; font-weight: 700; font-size: 2.2rem; }
-    .pos.p3 { color: #666; font-weight: 600; font-size: 2rem; }
+    .pos.p1 { color: #000; font-weight: 800; font-size: 2.8rem; }
+    .pos.p2 { color: #333; font-weight: 700; font-size: 2.6rem; }
+    .pos.p3 { color: #666; font-weight: 600; font-size: 2.4rem; }
 
     /* name cell */
     .name-cell {
@@ -212,6 +348,7 @@
       align-items: center;
       gap: 12px;
       overflow: hidden;
+      min-height: 0;
     }
 
     .name-text {
@@ -220,6 +357,25 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    .name-text.gold-glow {
+      color: #FBBF24;
+      background: #111;
+      padding: 6px 16px;
+      border-radius: 10px;
+      text-shadow:
+        0 0 12px rgba(251, 191, 36, 0.5),
+        0 0 28px rgba(251, 191, 36, 0.2);
+    }
+
+    .name-text.gold {
+      color: #DAA520;
+    }
+
+    .name-text.bronze {
+      color: #E07A3A;
+    }
+
 
     .bonus-badge {
       flex-shrink: 0;
@@ -237,6 +393,15 @@
     /* weekly number */
     .weekly      { font-weight: 700; }
     .weekly.zero { color: #ddd; }
+
+    .deal-unit {
+      font-size: 0.38em;
+      font-weight: 600;
+      color: #bbb;
+      vertical-align: super;
+      letter-spacing: 0;
+    }
+    .weekly.zero .deal-unit { color: #ddd; }
 
     /* tier badge */
     .tier-cell {
@@ -296,15 +461,45 @@
 <body>
 
 <header>
-  <h1>Sales Leaderboard</h1>
-  <div class="cal-widget" id="cal-widget">
-    <div class="cal-top">Monthly</div>
-    <div class="cal-bottom">
-      <div class="cal-month" id="cal-month">—</div>
-      <div class="cal-year"  id="cal-year">—</div>
+  <img class="header-logo" src="/ImpressdLogo.jpeg" alt="Impressd" />
+  <div class="cal-widgets">
+    <div class="cal-widget">
+      <div class="cal-top">Monthly</div>
+      <div class="cal-bottom">
+        <div class="cal-month" id="cal-month">—</div>
+        <div class="cal-year"  id="cal-year">—</div>
+      </div>
+    </div>
+    <div class="cal-widget">
+      <div class="cal-top">Week of</div>
+      <div class="cal-bottom">
+        <div class="cal-month" id="cal-week-day">—</div>
+        <div class="cal-year"  id="cal-week-mon">—</div>
+      </div>
     </div>
   </div>
 </header>
+
+<div class="countdown-bar">
+  <span class="countdown-label">Week ends in</span>
+  <div class="countdown-display">
+    <div class="countdown-unit">
+      <span class="countdown-time" id="cd-hours">--</span>
+      <span class="countdown-unit-label">hrs</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-time" id="cd-mins">--</span>
+      <span class="countdown-unit-label">min</span>
+    </div>
+    <span class="countdown-sep">:</span>
+    <div class="countdown-unit">
+      <span class="countdown-time" id="cd-secs">--</span>
+      <span class="countdown-unit-label">sec</span>
+    </div>
+  </div>
+  <span class="countdown-urgency">Close more deals →</span>
+</div>
 
 <div class="bonus-banner" id="bonus-banner" style="display:none">
   <span class="bonus-label">This Week's Bonus</span>
@@ -319,6 +514,15 @@
   </span>
 </div>
 
+<div class="ticker-wrap">
+  <div class="ticker-label">Latest Close</div>
+  <div class="ticker-overflow">
+    <div class="ticker-track" id="ticker-track">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
 <div id="content" class="loading">Fetching data…</div>
 
 <footer>
@@ -327,6 +531,10 @@
 </footer>
 
 <script>
+  // ── Feature flags ───────────────────────────────────
+  // Set to true during a bonus week to re-enable bonus banner + badges
+  const BONUS_WEEK = false;
+
   function tierClass(name) {
     const map = {
       'starter':          'tier-starter',
@@ -349,23 +557,40 @@
       const data = await res.json();
       if (data.error) throw new Error(data.error);
 
-      const { rows, weekStart, bonusThreshold, bonusAmount } = data;
+      const { rows, weekStart, bonusThreshold, bonusAmount, latestDeal } = data;
 
-      // Calendar widget
+      // Calendar widgets
       const today = new Date();
       document.getElementById('cal-month').textContent =
         today.toLocaleDateString('en-AU', { month: 'long' }).toUpperCase();
       document.getElementById('cal-year').textContent =
         today.getFullYear();
 
-      // Bonus banner
-      banner.style.display = 'flex';
-      bonusReq.textContent = `${bonusThreshold} sales`;
-      pillAmt.textContent  = `$${bonusAmount.toLocaleString()}`;
-
-      // Week-of label
+      // Week-of widget — show the Monday date
       const weekStartDate = new Date(weekStart + 'T00:00:00');
-      const weekOf = weekStartDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' });
+      document.getElementById('cal-week-day').textContent =
+        weekStartDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }).toUpperCase();
+      document.getElementById('cal-week-mon').textContent =
+        weekStartDate.getFullYear();
+
+      // Deal-change detection → celebration sound
+      const totalWeekly = rows.reduce((sum, r) => sum + r.weeklyDeals, 0);
+      if (prevTotalWeekly !== null && totalWeekly > prevTotalWeekly) {
+        playCelebration();
+      }
+      prevTotalWeekly = totalWeekly;
+
+      // Latest close ticker
+      updateLatestClose(latestDeal);
+
+      // Bonus banner — only shown during a bonus week
+      if (BONUS_WEEK) {
+        banner.style.display = 'flex';
+        bonusReq.textContent = `${bonusThreshold} sales`;
+        pillAmt.textContent  = `$${bonusAmount.toLocaleString()}`;
+      } else {
+        banner.style.display = 'none';
+      }
 
       document.getElementById('updated').textContent =
         `Updated ${new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' })}`;
@@ -390,10 +615,7 @@
             <tr>
               <th>#</th>
               <th>Rep</th>
-              <th class="center">
-                Sales This Week
-                <span class="week-sub">w/c ${weekOf}</span>
-              </th>
+              <th class="center">Sales This Week</th>
               <th class="center">Sales This Month</th>
               <th class="center">Rank</th>
             </tr>
@@ -403,20 +625,25 @@
               const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
               const wkClass  = row.weeklyDeals === 0 ? 'weekly zero' : 'weekly';
               const tClass   = tierClass(row.tierName);
-              const bonus    = row.bonusAchieved
+              const bonus    = BONUS_WEEK && row.bonusAchieved
                 ? `<span class="bonus-badge">Bonus ✓</span>`
                 : '';
+              const rankEmoji = i === 0 ? '🏆' : i === 1 ? '2️⃣' : i === 2 ? '3️⃣' : '';
+              const nameClass = i === 0 ? 'name-text gold-glow'
+                              : i === 1 ? 'name-text gold'
+                              : i === 2 ? 'name-text bronze'
+                              : 'name-text';
               return `
                 <tr>
-                  <td class="center"><span class="pos ${posClass}">${i + 1}</span></td>
+                  <td class="center"><span class="pos ${posClass}">${rankEmoji || i + 1}</span></td>
                   <td>
                     <div class="name-cell">
-                      <span class="name-text">${row.name}</span>
+                      <span class="${nameClass}">${row.name}</span>
                       ${bonus}
                     </div>
                   </td>
-                  <td class="center ${wkClass}">${row.weeklyDeals}</td>
-                  <td class="center">${row.monthlyDeals}</td>
+                  <td class="center ${wkClass}">${row.weeklyDeals}<span class="deal-unit">/w</span></td>
+                  <td class="center">${row.monthlyDeals}<span class="deal-unit">/m</span></td>
                   <td class="center">
                     <div class="tier-cell">
                       <span class="tier-badge ${tClass}">${row.tierName}</span>
@@ -434,8 +661,136 @@
     }
   }
 
+  // ── Celebration sound (Web Audio API) ──────────────
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+
+  function playCelebration() {
+    const ctx = getAudioCtx();
+    // Ascending fanfare: C5 → E5 → G5 → C6
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    const times = [0, 0.12, 0.24, 0.38];
+    const dur   = [0.18, 0.18, 0.18, 0.45];
+
+    notes.forEach((freq, i) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+
+      const t0 = ctx.currentTime + times[i];
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.28, t0 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur[i]);
+
+      osc.start(t0);
+      osc.stop(t0 + dur[i]);
+    });
+
+    // Sparkle layer — high shimmer
+    [1318.5, 1568, 2093].forEach((freq, i) => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t0 = ctx.currentTime + 0.38 + i * 0.06;
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.12, t0 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.2);
+      osc.start(t0);
+      osc.stop(t0 + 0.22);
+    });
+  }
+
+  // ── Time-ago helper — handles YYYY-MM-DD date strings ──
+  function timeAgo(closedAt) {
+    if (!closedAt) return '';
+    // Date-only string (Airtable Deposit Date): "YYYY-MM-DD"
+    if (/^\d{4}-\d{2}-\d{2}$/.test(closedAt)) {
+      const [y, m, d] = closedAt.split('-').map(Number);
+      const then = new Date(y, m - 1, d);
+      const today = new Date(); today.setHours(0, 0, 0, 0);
+      const days = Math.round((today - then) / 86400000);
+      if (days === 0) return 'Today';
+      if (days === 1) return 'Yesterday';
+      return `${days} days ago`;
+    }
+    // Full ISO timestamp fallback
+    const secs = Math.floor((Date.now() - new Date(closedAt)) / 1000);
+    if (secs < 60)   return `${secs}s ago`;
+    if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+    if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+    return `${Math.floor(secs / 86400)}d ago`;
+  }
+
+  // ── Deal-change detection ───────────────────────────
+  let prevTotalWeekly = null;
+
+  function updateLatestClose(latestDeal) {
+    const track = document.getElementById('ticker-track');
+    if (!track) return;
+
+    let itemHtml;
+    if (!latestDeal) {
+      itemHtml = `<span class="ticker-item">
+        <span class="ticker-star">★</span>
+        <span class="ticker-rep">No closes recorded yet</span>
+      </span>`;
+    } else {
+      const ago = timeAgo(latestDeal.closedAt);
+      itemHtml = `<span class="ticker-item">
+        <span class="ticker-star">★</span>
+        <span class="ticker-rep">${latestDeal.repName}</span>
+        <span class="ticker-dot">·</span>
+        <span class="ticker-date">${ago}</span>
+      </span>`;
+    }
+    // Fill the track: repeat enough times to guarantee full-width coverage.
+    // -50% animation still loops seamlessly with any even number of copies.
+    const COPIES = 12;
+    track.innerHTML = itemHtml.repeat(COPIES);
+  }
+
+  function updateCountdown() {
+    const now = new Date();
+    // Next Saturday midnight = end of Saturday (start of Sunday)
+    const target = new Date(now);
+    const day = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+    const daysUntilSat = (6 - day + 7) % 7 || 7; // days until next Saturday (never 0)
+    target.setDate(now.getDate() + daysUntilSat);
+    target.setHours(23, 59, 59, 999);
+
+    const diff = target - now;
+    if (diff <= 0) { updateCountdown(); return; }
+
+    const totalSecs = Math.floor(diff / 1000);
+    const h = Math.floor(totalSecs / 3600);
+    const m = Math.floor((totalSecs % 3600) / 60);
+    const s = totalSecs % 60;
+
+    document.getElementById('cd-hours').textContent = String(h).padStart(2, '0');
+    document.getElementById('cd-mins').textContent  = String(m).padStart(2, '0');
+    document.getElementById('cd-secs').textContent  = String(s).padStart(2, '0');
+
+    // Flash urgency text red when under 2 hours
+    const urgency = document.querySelector('.countdown-urgency');
+    if (h < 2) urgency.style.color = '#ff3b30';
+    else urgency.style.color = '#FF6B00';
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
   load();
-  setInterval(load, 2 * 60 * 1000);
+  setInterval(load, 90 * 1000);
 </script>
 </body>
 </html>

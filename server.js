@@ -43,12 +43,21 @@ async function fetchAllRecords(tableId, params = '') {
   return records;
 }
 
+// Single-record fetch — returns the first record from a sorted/filtered query
+async function fetchOneRecord(tableId, params = '') {
+  const url = `${AIRTABLE_BASE}/${tableId}?pageSize=1${params}`;
+  const res = await fetch(url, { headers: HEADERS });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.records && data.records[0] || null;
+}
+
 app.get('/api/leaderboard', async (req, res) => {
   try {
     const weekStart = getWeekStart();
 
-    // Fetch tiers, reps, and weekly deals in parallel
-    const [tierRecords, repRecords, weekDeals] = await Promise.all([
+    // Fetch tiers, reps, weekly deals, and most recent deal in parallel
+    const [tierRecords, repRecords, weekDeals, latestDealRecord] = await Promise.all([
       fetchAllRecords(TIERS_TABLE, '&fields[]=Tier+Name&fields[]=Commission+Percentage'),
       fetchAllRecords(
         REPS_TABLE,
@@ -62,6 +71,13 @@ app.get('/api/leaderboard', async (req, res) => {
         // NOT(IS_BEFORE) == >= weekStart, so Monday's deals are included
         `&filterByFormula=AND(NOT(IS_BEFORE({Deposit Date},"${weekStart}")),{Deposit Date}!="")` +
         `&fields[]=Reps&fields[]=Deposit+Date`
+      ),
+      // Most recent deal ever — sorted by Deposit Date (field ID) descending
+      fetchOneRecord(
+        DEALS_TABLE,
+        `&filterByFormula={Deposit Date}!=""` +
+        `&sort%5B0%5D%5Bfield%5D=fld5QxFIYCKvXxLac&sort%5B0%5D%5Bdirection%5D=desc` +
+        `&fields%5B%5D=Reps&fields%5B%5D=Deposit+Date`
       ),
     ]);
 
@@ -79,6 +95,34 @@ app.get('/api/leaderboard', async (req, res) => {
     for (const deal of weekDeals) {
       for (const repId of (deal.fields['Reps'] || [])) {
         weeklyCounts[repId] = (weeklyCounts[repId] || 0) + 1;
+      }
+    }
+
+    // Most recent deal ever — resolved from latestDealRecord
+    let latestDeal = null;
+    if (latestDealRecord) {
+      const repId = (latestDealRecord.fields['Reps'] || [])[0];
+      if (repId) {
+        // Try active reps list first; fall back to a direct record fetch
+        // (covers the case where the closer is no longer marked Active)
+        let rep = repRecords.find(r => r.id === repId);
+        if (!rep) {
+          try {
+            const r = await fetch(
+              `${AIRTABLE_BASE}/${REPS_TABLE}/${repId}?fields[]=First+Name&fields[]=Last+Name`,
+              { headers: HEADERS }
+            );
+            const d = await r.json();
+            if (d.fields) rep = d;
+          } catch (_) { /* ignore, latestDeal stays null */ }
+        }
+        if (rep) {
+          const f = rep.fields;
+          latestDeal = {
+            repName: `${f['First Name'] || ''} ${f['Last Name'] || ''}`.trim(),
+            closedAt: latestDealRecord.fields['Deposit Date'], // YYYY-MM-DD
+          };
+        }
       }
     }
 
@@ -106,6 +150,7 @@ app.get('/api/leaderboard', async (req, res) => {
       weekStart,
       bonusThreshold: BONUS_THRESHOLD,
       bonusAmount: BONUS_AMOUNT,
+      latestDeal,
       updatedAt: new Date().toISOString(),
     });
   } catch (err) {

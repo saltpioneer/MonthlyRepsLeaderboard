@@ -20,13 +20,17 @@ const AIRTABLE_BASE = `https://api.airtable.com/v0/${BASE_ID}`;
 const HEADERS = { Authorization: `Bearer ${PAT}` };
 
 function getWeekStart() {
-  const now = new Date();
-  const day = now.getDay(); // 0=Sun, 1=Mon…
+  // Compute Monday's date in Melbourne time (AEDT/AEST)
+  const melbParts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Australia/Melbourne',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date()).reduce((a, p) => { a[p.type] = p.value; return a; }, {});
+
+  const melbNow = new Date(`${melbParts.year}-${melbParts.month}-${melbParts.day}T00:00:00`);
+  const day  = melbNow.getDay(); // 0=Sun, 1=Mon…
   const diff = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diff);
-  monday.setHours(0, 0, 0, 0);
-  return monday.toISOString().slice(0, 10); // YYYY-MM-DD
+  melbNow.setDate(melbNow.getDate() + diff);
+  return melbNow.toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
 async function fetchAllRecords(tableId, params = '') {
@@ -77,7 +81,9 @@ app.get('/api/leaderboard', async (req, res) => {
         DEALS_TABLE,
         `&filterByFormula={Deposit Date}!=""` +
         `&sort%5B0%5D%5Bfield%5D=fld5QxFIYCKvXxLac&sort%5B0%5D%5Bdirection%5D=desc` +
-        `&fields%5B%5D=Reps&fields%5B%5D=Deposit+Date`
+        `&fields%5B%5D=Reps&fields%5B%5D=Deposit+Date` +
+        `&fields%5B%5D=Deal+Value+%28Selling+Price%29` +
+        `&fields%5B%5D=Gross+Comms+%28Above+Base+Price%29`
       ),
     ]);
 
@@ -121,6 +127,8 @@ app.get('/api/leaderboard', async (req, res) => {
           latestDeal = {
             repName: `${f['First Name'] || ''} ${f['Last Name'] || ''}`.trim(),
             closedAt: latestDealRecord.fields['Deposit Date'], // YYYY-MM-DD
+            salePrice: latestDealRecord.fields['Deal Value (Selling Price)']       ?? null,
+            comms:     latestDealRecord.fields['Gross Comms (Above Base Price)']   ?? null,
           };
         }
       }

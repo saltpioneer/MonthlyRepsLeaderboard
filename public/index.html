@@ -10,7 +10,8 @@
     body {
       background: #fff;
       color: #000;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                   "Helvetica Neue", sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -19,7 +20,7 @@
     /* ── Header ─────────────────────────────────────── */
     header {
       padding: 16px 40px 14px;
-      border-bottom: 3px solid #000;
+      border-bottom: 1px solid #ebebeb;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -43,7 +44,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      border: 1.5px solid #e0e0e0;
+      border: 1px solid #e8e8e8;
       border-radius: 12px;
       overflow: hidden;
       min-width: 90px;
@@ -137,14 +138,6 @@
       margin-left: 2px;
     }
 
-    .countdown-urgency {
-      font-size: 0.92rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #FF6B00;
-    }
-
     /* ── Bonus banner ───────────────────────────────── */
     .bonus-banner {
       background: #FF6B00;
@@ -175,10 +168,6 @@
       gap: 10px;
       font-size: 1.1rem;
       font-weight: 600;
-    }
-
-    .bonus-detail .bonus-req {
-      /* plain white text */
     }
 
     .bonus-detail .bonus-arrow {
@@ -217,7 +206,7 @@
       display: flex;
       align-items: stretch;
       background: #111;
-      border-bottom: 3px solid #FF6B00;
+      border-bottom: 2px solid #FF6B00;
       height: 68px;
       overflow: hidden;
     }
@@ -229,7 +218,7 @@
       font-weight: 800;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      padding: 0 22px;
+      padding: 0 40px;
       display: flex;
       align-items: center;
       white-space: nowrap;
@@ -269,6 +258,42 @@
     .ticker-dot   { color: rgba(255,255,255,0.25); font-weight: 300; }
     .ticker-date  { color: rgba(255,255,255,0.5); font-weight: 500; font-size: 1.25rem; }
 
+    .ticker-badge {
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      border: 2px solid rgba(255,107,0,0.5);
+      border-radius: 6px;
+      padding: 2px 10px;
+      background: rgba(255,107,0,0.08);
+      line-height: 1.15;
+    }
+    .ticker-badge-sale {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .ticker-badge-comms {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #4ade80;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .ticker-badge-comms-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      color: rgba(74,222,128,0.65);
+      background: rgba(74,222,128,0.12);
+      border-radius: 3px;
+      padding: 1px 4px;
+    }
+
     @keyframes ticker-scroll {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
@@ -281,11 +306,18 @@
       table-layout: fixed;
     }
 
-    col.col-pos   { width: 80px; }
+    col.col-pos   { width: 110px; }
     col.col-name  { /* auto */ }
     col.col-week  { width: 14%; }
     col.col-month { width: 14%; }
     col.col-tier  { width: 13%; }
+
+    /* Align table content with the 40px page rail */
+    thead th:first-child,
+    tbody td:first-child { padding-left: 0; text-align: center; }
+
+    thead th:last-child,
+    tbody td:last-child  { padding-right: 40px; }
 
     thead th {
       font-size: 1.05rem;
@@ -294,7 +326,7 @@
       text-transform: uppercase;
       color: #888;
       padding: 12px 14px;
-      border-bottom: 2px solid #000;
+      border-bottom: 1px solid #000;
       text-align: left;
       white-space: normal;
       line-height: 1.3;
@@ -312,12 +344,13 @@
       margin-top: 2px;
     }
 
-    tbody tr { border-bottom: 1px solid #e8e8e8; }
+    tbody tr { border-bottom: 1px solid #f0f0f0; }
     tbody tr:last-child { border-bottom: none; }
 
     tbody td {
       font-size: 3.4rem;
       font-weight: 500;
+      letter-spacing: -0.01em;
       padding: 14px 14px;
       vertical-align: middle;
       overflow: hidden;
@@ -342,6 +375,21 @@
     .pos.p2 { color: #333; font-weight: 700; font-size: 2.6rem; }
     .pos.p3 { color: #666; font-weight: 600; font-size: 2.4rem; }
 
+    /* ── First-place row fill ────────────────────────── */
+    tbody tr.rank-first {
+      background: radial-gradient(ellipse 160% 220% at 28% 50%,
+        #C24010 0%, #8C2409 45%, #5E1605 100%);
+    }
+    tbody tr.rank-first td {
+      background: transparent;
+      color: #FFE8CC;
+      border-bottom: 1px solid #4A1203;
+    }
+    tbody tr.rank-first .pos.p1       { color: #FFE8CC; }
+    tbody tr.rank-first .deal-unit    { color: rgba(255, 232, 204, 0.50); }
+    tbody tr.rank-first .weekly.zero  { color: rgba(255, 232, 204, 0.40); }
+    tbody tr.rank-first .weekly.zero .deal-unit { color: rgba(255, 232, 204, 0.30); }
+
     /* name cell */
     .name-cell {
       display: flex;
@@ -359,13 +407,7 @@
     }
 
     .name-text.gold-glow {
-      color: #FBBF24;
-      background: #111;
-      padding: 6px 16px;
-      border-radius: 10px;
-      text-shadow:
-        0 0 12px rgba(251, 191, 36, 0.5),
-        0 0 28px rgba(251, 191, 36, 0.2);
+      color: #FFE08A;
     }
 
     .name-text.gold {
@@ -375,7 +417,6 @@
     .name-text.bronze {
       color: #E07A3A;
     }
-
 
     .bonus-badge {
       flex-shrink: 0;
@@ -390,18 +431,24 @@
       white-space: nowrap;
     }
 
-    /* weekly number */
-    .weekly      { font-weight: 700; }
+    /* weekly + monthly number columns */
+    tbody td:nth-child(3),
+    tbody td:nth-child(4) {
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      font-variant-numeric: tabular-nums;
+    }
+
     .weekly.zero { color: #ddd; }
 
     .deal-unit {
-      font-size: 0.38em;
-      font-weight: 600;
-      color: #bbb;
+      font-size: 0.35em;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.18);
       vertical-align: super;
-      letter-spacing: 0;
+      letter-spacing: 0.02em;
     }
-    .weekly.zero .deal-unit { color: #ddd; }
+    .weekly.zero .deal-unit { color: rgba(0, 0, 0, 0.1); }
 
     /* tier badge */
     .tier-cell {
@@ -434,6 +481,25 @@
     .tier-elite-closer      { background: #fef3c7; color: #92400e; }
     .tier-sales-leader      { background: #fee2e2; color: #b91c1c; }
     .tier-default           { background: #f0f0f0; color: #555; }
+
+    /* ── Deal-flash animation ───────────────────────── */
+    @keyframes deal-flash {
+      0%   { background: rgba(255, 107, 0, 0.22); }
+      100% { background: transparent; }
+    }
+    @keyframes deal-flash-first {
+      0%   { background: rgba(255, 224, 138, 0.30); }
+      100% { background: transparent; }
+    }
+    tbody tr.deal-flash td            { animation: deal-flash       2.4s ease-out forwards; }
+    tbody tr.rank-first.deal-flash td { animation: deal-flash-first 2.4s ease-out forwards; }
+
+    /* ── Countdown urgency pulse ─────────────────────── */
+    @keyframes cd-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.45; }
+    }
+    .countdown-time.pulse { animation: cd-pulse 1s ease-in-out infinite; }
 
     /* ── Utility ────────────────────────────────────── */
     .loading, .error {
@@ -498,7 +564,6 @@
       <span class="countdown-unit-label">sec</span>
     </div>
   </div>
-  <span class="countdown-urgency">Close more deals →</span>
 </div>
 
 <div class="bonus-banner" id="bonus-banner" style="display:none">
@@ -560,25 +625,28 @@
       const { rows, weekStart, bonusThreshold, bonusAmount, latestDeal } = data;
 
       // Calendar widgets
-      const today = new Date();
+      const TZ = 'Australia/Melbourne';
+      const now = new Date();
       document.getElementById('cal-month').textContent =
-        today.toLocaleDateString('en-AU', { month: 'long' }).toUpperCase();
+        now.toLocaleDateString('en-AU', { timeZone: TZ, month: 'long' }).toUpperCase();
       document.getElementById('cal-year').textContent =
-        today.getFullYear();
+        now.toLocaleDateString('en-AU', { timeZone: TZ, year: 'numeric' });
 
-      // Week-of widget — show the Monday date
+      // Week-of widget — show the Monday date in Melbourne time
       const weekStartDate = new Date(weekStart + 'T00:00:00');
       document.getElementById('cal-week-day').textContent =
-        weekStartDate.toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }).toUpperCase();
+        weekStartDate.toLocaleDateString('en-AU', { timeZone: TZ, day: 'numeric', month: 'short' }).toUpperCase();
       document.getElementById('cal-week-mon').textContent =
-        weekStartDate.getFullYear();
+        weekStartDate.toLocaleDateString('en-AU', { timeZone: TZ, year: 'numeric' });
 
-      // Deal-change detection → celebration sound
+      // Deal-change detection → celebration sound + row flash
       const totalWeekly = rows.reduce((sum, r) => sum + r.weeklyDeals, 0);
-      if (prevTotalWeekly !== null && totalWeekly > prevTotalWeekly) {
-        playCelebration();
-      }
+      const gainedIds = prevTotalWeekly !== null
+        ? rows.filter(r => (r.weeklyDeals || 0) > (prevWeeklyCounts[r.id] || 0)).map(r => r.id)
+        : [];
+      if (gainedIds.length) playCelebration();
       prevTotalWeekly = totalWeekly;
+      prevWeeklyCounts = Object.fromEntries(rows.map(r => [r.id, r.weeklyDeals]));
 
       // Latest close ticker
       updateLatestClose(latestDeal);
@@ -593,7 +661,7 @@
       }
 
       document.getElementById('updated').textContent =
-        `Updated ${new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' })}`;
+        `Updated ${new Date().toLocaleTimeString('en-AU', { timeZone: 'Australia/Melbourne', hour: '2-digit', minute: '2-digit' })}`;
 
       if (rows.length === 0) {
         content.className = 'loading';
@@ -634,8 +702,8 @@
                               : i === 2 ? 'name-text bronze'
                               : 'name-text';
               return `
-                <tr>
-                  <td class="center"><span class="pos ${posClass}">${rankEmoji || i + 1}</span></td>
+                <tr data-id="${row.id}"${i === 0 ? ' class="rank-first"' : ''}>
+                  <td><span class="pos ${posClass}">${rankEmoji || i + 1}</span></td>
                   <td>
                     <div class="name-cell">
                       <span class="${nameClass}">${row.name}</span>
@@ -655,6 +723,15 @@
           </tbody>
         </table>
       `;
+      // Flash rows that just gained a deal
+      gainedIds.forEach(id => {
+        const tr = content.querySelector(`tr[data-id="${id}"]`);
+        if (!tr) return;
+        tr.classList.remove('deal-flash');
+        void tr.offsetWidth; // force reflow to restart animation
+        tr.classList.add('deal-flash');
+      });
+
     } catch (err) {
       content.className = 'error';
       content.textContent = `Error: ${err.message}`;
@@ -717,8 +794,9 @@
     if (/^\d{4}-\d{2}-\d{2}$/.test(closedAt)) {
       const [y, m, d] = closedAt.split('-').map(Number);
       const then = new Date(y, m - 1, d);
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      const days = Math.round((today - then) / 86400000);
+      const todayMelb = new Date(new Date().toLocaleString('en-US', { timeZone: 'Australia/Melbourne' }));
+      todayMelb.setHours(0, 0, 0, 0);
+      const days = Math.round((todayMelb - then) / 86400000);
       if (days === 0) return 'Today';
       if (days === 1) return 'Yesterday';
       return `${days} days ago`;
@@ -733,6 +811,14 @@
 
   // ── Deal-change detection ───────────────────────────
   let prevTotalWeekly = null;
+  let prevWeeklyCounts = {}; // repId → weeklyDeals
+
+  function fmtMoney(val) {
+    if (val == null) return null;
+    const n = Number(val);
+    if (isNaN(n)) return null;
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
 
   function updateLatestClose(latestDeal) {
     const track = document.getElementById('ticker-track');
@@ -746,9 +832,17 @@
       </span>`;
     } else {
       const ago = timeAgo(latestDeal.closedAt);
+      const sale = fmtMoney(latestDeal.salePrice);
+      const comms = fmtMoney(latestDeal.comms);
+      const badgeHtml = (sale || comms) ? `
+        <span class="ticker-badge">
+          ${sale  ? `<span class="ticker-badge-sale">${sale}</span>`   : ''}
+          ${comms ? `<span class="ticker-badge-comms">${comms} <span class="ticker-badge-comms-label">COMMS</span></span>` : ''}
+        </span>` : '';
       itemHtml = `<span class="ticker-item">
         <span class="ticker-star">★</span>
         <span class="ticker-rep">${latestDeal.repName}</span>
+        ${badgeHtml}
         <span class="ticker-dot">·</span>
         <span class="ticker-date">${ago}</span>
       </span>`;
@@ -759,14 +853,31 @@
     track.innerHTML = itemHtml.repeat(COPIES);
   }
 
+  // Returns Melbourne's UTC offset in ms at the given instant
+  function getMelbOffset(date) {
+    const utc  = new Date(date.toLocaleString('en-US', { timeZone: 'UTC' }));
+    const melb = new Date(date.toLocaleString('en-US', { timeZone: 'Australia/Melbourne' }));
+    return melb - utc;
+  }
+
   function updateCountdown() {
     const now = new Date();
-    // Next Saturday midnight = end of Saturday (start of Sunday)
-    const target = new Date(now);
-    const day = now.getDay(); // 0=Sun,1=Mon,...,6=Sat
-    const daysUntilSat = (6 - day + 7) % 7 || 7; // days until next Saturday (never 0)
-    target.setDate(now.getDate() + daysUntilSat);
-    target.setHours(23, 59, 59, 999);
+    const offsetMs = getMelbOffset(now);
+
+    // Shift now into Melbourne wall-clock coordinates (using UTC methods for clean arithmetic)
+    const melbNow = new Date(now.getTime() + offsetMs);
+    const melbDay = melbNow.getUTCDay(); // 0=Sun in Melbourne
+
+    // Days until end of THIS Sunday (0 if today is already Sunday in Melbourne)
+    const daysUntilSun = (7 - melbDay) % 7;
+
+    // Target: that Sunday at 23:59:59 Melbourne wall-clock time
+    const targetMelb = new Date(melbNow.getTime());
+    targetMelb.setUTCDate(melbNow.getUTCDate() + daysUntilSun);
+    targetMelb.setUTCHours(23, 59, 59, 999);
+
+    // Convert back to actual UTC
+    const target = new Date(targetMelb.getTime() - offsetMs);
 
     const diff = target - now;
     if (diff <= 0) { updateCountdown(); return; }
@@ -780,10 +891,10 @@
     document.getElementById('cd-mins').textContent  = String(m).padStart(2, '0');
     document.getElementById('cd-secs').textContent  = String(s).padStart(2, '0');
 
-    // Flash urgency text red when under 2 hours
-    const urgency = document.querySelector('.countdown-urgency');
-    if (h < 2) urgency.style.color = '#ff3b30';
-    else urgency.style.color = '#FF6B00';
+    // Pulse digits when under 1 hour
+    document.querySelectorAll('.countdown-time').forEach(el => {
+      el.classList.toggle('pulse', h === 0);
+    });
   }
 
   updateCountdown();

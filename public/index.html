@@ -12,7 +12,8 @@
       color: #000;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
                    "Helvetica Neue", sans-serif;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
@@ -514,20 +515,214 @@
     .error { color: #c00; }
 
     footer {
-      margin-top: auto;
-      padding: 10px 40px;
-      border-top: 1px solid #ebebeb;
-      font-size: 0.85rem;
-      color: #ccc;
+      padding: 5px 28px;
+      font-size: 0.68rem;
+      background: #080808;
+      color: rgba(255,255,255,0.2);
+      border-top: 1px solid #111;
       display: flex;
       justify-content: space-between;
+      flex-shrink: 0;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
     }
+
+    /* ── Shared scroll keyframe (used by sub-ticker) ─── */
+    @keyframes news-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── Solar Panel ─────────────────────────────────── */
+    .solar-panel {
+      flex: 1;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      background: #0d0d0d;
+      overflow: hidden;
+      border-top: 2px solid #1a3a5c;
+    }
+
+    .solar-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      height: 48px;
+      background: #0a0a0a;
+      border-bottom: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+
+    .solar-intel-label {
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #3b82f6;
+    }
+
+    .solar-intel-label::after {
+      content: '_';
+      animation: blink 1.1s step-end infinite;
+      margin-left: 3px;
+      opacity: 0.7;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.7; }
+      50%       { opacity: 0; }
+    }
+
+    .solar-panel-timestamp {
+      font-size: 0.72rem;
+      font-weight: 500;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.05em;
+    }
+
+    .solar-feature {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 24px 36px;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .solar-feature::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .solar-source {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      margin-bottom: 14px;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    }
+
+    .solar-headline {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #f0f0f0;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+      max-width: 90%;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .solar-headline.fading {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .solar-sentiment {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 1.0rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: opacity 0.5s ease;
+    }
+
+    .solar-sentiment.fading { opacity: 0; }
+
+    .sentiment-bullish { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .sentiment-bearish { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+    .sentiment-neutral { background: rgba(156,163,175,0.10); color: #9ca3af; border: 1px solid rgba(156,163,175,0.25); }
+
+    .solar-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: #3b82f6;
+      width: 0%;
+      transition: width 8s linear;
+    }
+
+    .solar-sub-ticker {
+      height: 40px;
+      display: flex;
+      align-items: stretch;
+      background: #080808;
+      border-top: 1px solid #1a1a1a;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .solar-sub-ticker-label {
+      background: #1d3a6e;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.62rem;
+      font-weight: 900;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+      border-right: 1px solid #2a4a8e;
+    }
+
+    .solar-sub-ticker-overflow {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .solar-sub-ticker-track {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      animation: news-scroll 90s linear infinite;
+    }
+
+    .solar-sub-ticker-track:empty { display: none; }
+
+    .solar-sub-ticker-item {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: rgba(229,231,235,0.7);
+      letter-spacing: 0.01em;
+    }
+
+    .solar-sub-ticker-sep {
+      color: #3b82f6;
+      font-size: 0.65rem;
+      padding: 0 36px;
+      opacity: 0.5;
+    }
+
+    /* ── #content: don't grow, table owns its height ─── */
+    #content { flex-shrink: 0; }
   </style>
 </head>
 <body>
 
 <header>
-  <img class="header-logo" src="/ImpressdLogo.jpeg" alt="Impressd" />
+  <img class="header-logo" src="/ImpressdConsultingLogo_Full.jpeg" alt="Impressd" />
   <div class="cal-widgets">
     <div class="cal-widget">
       <div class="cal-top">Monthly</div>
@@ -589,6 +784,25 @@
 </div>
 
 <div id="content" class="loading">Fetching data…</div>
+
+<div class="solar-panel" id="solar-panel">
+  <div class="solar-panel-header">
+    <span class="solar-intel-label">Solar Intel</span>
+    <span class="solar-panel-timestamp" id="solar-timestamp">—</span>
+  </div>
+  <div class="solar-feature" id="solar-feature">
+    <div class="solar-source" id="solar-source">LOADING...</div>
+    <div class="solar-headline" id="solar-headline">Fetching solar market intelligence...</div>
+    <div class="solar-sentiment sentiment-neutral" id="solar-sentiment">— NEUTRAL</div>
+    <div class="solar-progress" id="solar-progress"></div>
+  </div>
+  <div class="solar-sub-ticker">
+    <div class="solar-sub-ticker-label">Solar Feed</div>
+    <div class="solar-sub-ticker-overflow">
+      <div class="solar-sub-ticker-track" id="solar-sub-ticker-track"></div>
+    </div>
+  </div>
+</div>
 
 <footer>
   <span>Impressd Solar Sales</span>
@@ -689,7 +903,7 @@
             </tr>
           </thead>
           <tbody>
-            ${rows.map((row, i) => {
+            ${rows.slice(0, 10).map((row, i) => {
               const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : '';
               const wkClass  = row.weeklyDeals === 0 ? 'weekly zero' : 'weekly';
               const tClass   = tierClass(row.tierName);
@@ -813,6 +1027,11 @@
   let prevTotalWeekly = null;
   let prevWeeklyCounts = {}; // repId → weeklyDeals
 
+  // ── Solar panel state ────────────────────────────────
+  let solarArticles   = [];
+  let solarCurrentIdx = 0;
+  let solarCycleTimer = null;
+
   function fmtMoney(val) {
     if (val == null) return null;
     const n = Number(val);
@@ -902,6 +1121,98 @@
 
   load();
   setInterval(load, 90 * 1000);
+
+  // ── Solar panel ──────────────────────────────────────
+  function updateSolarTimestamp() {
+    const el = document.getElementById('solar-timestamp');
+    if (el) el.textContent = new Date().toLocaleTimeString('en-AU', {
+      timeZone: 'Australia/Melbourne',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    });
+  }
+
+  function showSolarArticle(idx) {
+    if (!solarArticles.length) return;
+    const article = solarArticles[idx % solarArticles.length];
+    const headline  = document.getElementById('solar-headline');
+    const sentiment = document.getElementById('solar-sentiment');
+    const source    = document.getElementById('solar-source');
+    const progress  = document.getElementById('solar-progress');
+    if (!headline || !sentiment || !source) return;
+
+    headline.classList.add('fading');
+    sentiment.classList.add('fading');
+
+    setTimeout(() => {
+      headline.textContent = article.title;
+
+      const sentimentMap = {
+        bullish: { label: 'BULLISH ▲', cls: 'sentiment-bullish' },
+        bearish: { label: 'BEARISH ▼', cls: 'sentiment-bearish' },
+        neutral: { label: 'NEUTRAL —',  cls: 'sentiment-neutral' },
+      };
+      const s = sentimentMap[article.sentiment] || sentimentMap.neutral;
+      sentiment.textContent = s.label;
+      sentiment.className   = `solar-sentiment ${s.cls}`;
+
+      const pubDate = article.publishedAt
+        ? new Date(article.publishedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
+        : '';
+      source.textContent = article.source
+        ? `${article.source.toUpperCase()}${pubDate ? '  ·  ' + pubDate : ''}`
+        : pubDate;
+
+      headline.classList.remove('fading');
+      sentiment.classList.remove('fading');
+
+      if (progress) {
+        progress.style.transition = 'none';
+        progress.style.width = '0%';
+        void progress.offsetWidth;
+        progress.style.transition = 'width 8s linear';
+        progress.style.width = '100%';
+      }
+    }, 520);
+  }
+
+  function cycleHeadlines() {
+    if (!solarArticles.length) return;
+    solarCurrentIdx = (solarCurrentIdx + 1) % solarArticles.length;
+    showSolarArticle(solarCurrentIdx);
+  }
+
+  function buildSubTicker(articles) {
+    const track = document.getElementById('solar-sub-ticker-track');
+    if (!track || !articles.length) return;
+    const inner = articles.map(a => {
+      const icon = a.sentiment === 'bullish' ? '▲' : a.sentiment === 'bearish' ? '▼' : '—';
+      return `<span class="solar-sub-ticker-item">${a.title}</span>` +
+             `<span class="solar-sub-ticker-sep">${icon}</span>`;
+    }).join('');
+    track.innerHTML = inner + inner;
+  }
+
+  async function loadNews() {
+    try {
+      const res  = await fetch('/api/news');
+      const data = await res.json();
+      if (data.error || !data.articles || !data.articles.length) return;
+      solarArticles   = data.articles;
+      solarCurrentIdx = 0;
+      showSolarArticle(0);
+      buildSubTicker(solarArticles);
+      if (solarCycleTimer) clearInterval(solarCycleTimer);
+      solarCycleTimer = setInterval(cycleHeadlines, 8000);
+    } catch (e) {
+      console.error('Solar news load error:', e);
+    }
+  }
+
+  loadNews();
+  setInterval(loadNews, 10 * 60 * 1000);
+
+  updateSolarTimestamp();
+  setInterval(updateSolarTimestamp, 1000);
 </script>
 </body>
 </html>

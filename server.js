@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const PAT = process.env.AIRTABLE_PAT;
+const NEWSDATA_API_KEY = process.env.NEWSDATAIO_API;
 const BASE_ID = 'appyS2wfnaZBRrhSV';
 const REPS_TABLE = 'tbl3huYeX0eQ7gPCM';
 const DEALS_TABLE = 'tblvCICpDQZ7o39Zq';
@@ -166,6 +167,55 @@ app.get('/api/leaderboard', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// ── News API ──────────────────────────────────────────────────────────────────
+let newsCache = { articles: [], fetchedAt: 0 };
+const NEWS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+function getSentiment(text) {
+  const t = (text || '').toLowerCase();
+  const bullish = ['record','growth','breakthrough','rise','gain','surge','boom',
+                   'milestone','expand','invest','boost','success','advance','profit','install'];
+  const bearish  = ['fall','decline','concern','risk','challenge','cut','tariff',
+                    'drop','loss','delay','ban','restrict','struggle','fail','cancel','shortage'];
+  const bScore = bullish.filter(w => t.includes(w)).length;
+  const rScore = bearish.filter(w  => t.includes(w)).length;
+  if (bScore > rScore) return 'bullish';
+  if (rScore > bScore) return 'bearish';
+  return 'neutral';
+}
+
+app.get('/api/news', async (req, res) => {
+  try {
+    const now = Date.now();
+    if (now - newsCache.fetchedAt < NEWS_CACHE_TTL && newsCache.articles.length) {
+      return res.json({ articles: newsCache.articles });
+    }
+    const q = encodeURIComponent('solar rebate OR solar panel OR renewable energy OR Solar Victoria');
+    const url = `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_API_KEY}&q=${q}&language=en&country=au&size=10`;
+    const r = await fetch(url);
+    const data = await r.json();
+    if (data.status !== 'success') throw new Error(data.message || 'Newsdata error');
+
+    // Map API sentiment (positive/negative/neutral) → bullish/bearish/neutral
+    const sentimentMap = { positive: 'bullish', negative: 'bearish', neutral: 'neutral' };
+
+    const articles = (data.results || [])
+      .filter(a => a.title && a.title !== '[Removed]')
+      .map(a => ({
+        title:       a.title,
+        source:      a.source_name || '',
+        sentiment:   sentimentMap[a.sentiment] || getSentiment(a.title),
+        publishedAt: a.pubDate || null,
+      }));
+    newsCache = { articles, fetchedAt: now };
+    res.json({ articles });
+  } catch (err) {
+    console.error('News fetch error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+// ─────────────────────────────────────────────────────────────────────────────
 
 app.use(express.static(path.join(__dirname, 'public')));
 

@@ -65,8 +65,8 @@ app.get('/api/leaderboard', async (req, res) => {
       fetchAllRecords(TIERS_TABLE, '&fields[]=Tier+Name&fields[]=Commission+Percentage'),
       fetchAllRecords(
         REPS_TABLE,
-        `&filterByFormula={Status}="Active"` +
-        `&fields[]=First+Name&fields[]=Last+Name` +
+        `&filterByFormula=AND({Status}="Active",{Role}="Sales Consultant")` +
+        `&fields[]=First+Name` +
         `&fields[]=Total+Deals+(Month+to+Date)` +
         `&fields[]=Commission+Tier`
       ),
@@ -115,7 +115,7 @@ app.get('/api/leaderboard', async (req, res) => {
         if (!rep) {
           try {
             const r = await fetch(
-              `${AIRTABLE_BASE}/${REPS_TABLE}/${repId}?fields[]=First+Name&fields[]=Last+Name`,
+              `${AIRTABLE_BASE}/${REPS_TABLE}/${repId}?fields[]=First+Name`,
               { headers: HEADERS }
             );
             const d = await r.json();
@@ -125,7 +125,7 @@ app.get('/api/leaderboard', async (req, res) => {
         if (rep) {
           const f = rep.fields;
           latestDeal = {
-            repName: `${f['First Name'] || ''} ${f['Last Name'] || ''}`.trim(),
+            repName: (f['First Name'] || '').trim(),
             closedAt: latestDealRecord.fields['Deposit Date'], // YYYY-MM-DD
             salePrice: latestDealRecord.fields['Deal Value (Selling Price)']       ?? null,
             comms:     latestDealRecord.fields['Gross Comms (Above Base Price)']   ?? null,
@@ -142,7 +142,7 @@ app.get('/api/leaderboard', async (req, res) => {
       const weeklyDeals = weeklyCounts[rep.id] || 0;
       return {
         id: rep.id,
-        name: `${f['First Name'] || ''} ${f['Last Name'] || ''}`.trim(),
+        name: (f['First Name'] || '').trim(),
         weeklyDeals,
         monthlyDeals: f['Total Deals (Month to Date)'] || 0,
         tierName: tier ? tier.name : '—',

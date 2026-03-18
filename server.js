@@ -168,51 +168,11 @@ app.get('/api/leaderboard', async (req, res) => {
   }
 });
 
-// ── News API ──────────────────────────────────────────────────────────────────
-let newsCache = { articles: [], fetchedAt: 0 };
-const NEWS_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
-
-function getSentiment(text) {
-  const t = (text || '').toLowerCase();
-  const bullish = ['record','growth','breakthrough','rise','gain','surge','boom',
-                   'milestone','expand','invest','boost','success','advance','profit','install'];
-  const bearish  = ['fall','decline','concern','risk','challenge','cut','tariff',
-                    'drop','loss','delay','ban','restrict','struggle','fail','cancel','shortage'];
-  const bScore = bullish.filter(w => t.includes(w)).length;
-  const rScore = bearish.filter(w  => t.includes(w)).length;
-  if (bScore > rScore) return 'bullish';
-  if (rScore > bScore) return 'bearish';
-  return 'neutral';
-}
-
-app.get('/api/news', async (req, res) => {
-  // Tell Vercel's CDN to cache this response for 10 minutes — prevents
-  // serverless cold starts from hammering the newsdata.io free-tier limit.
-  res.set('Cache-Control', 's-maxage=600, stale-while-revalidate=60');
-  try {
-    const now = Date.now();
-    if (now - newsCache.fetchedAt < NEWS_CACHE_TTL && newsCache.articles.length) {
-      return res.json({ articles: newsCache.articles });
-    }
-    const q = encodeURIComponent('solar rebate OR solar incentive OR solar policy OR solar industry OR energy policy Australia OR solar installer OR government solar');
-    const url = `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_API_KEY}&q=${q}&language=en&size=10`;
-    const r = await fetch(url);
-    const data = await r.json();
-    if (data.status !== 'success') throw new Error(data.message || 'Newsdata error');
-
-    const articles = (data.results || [])
-      .filter(a => a.title && a.title !== '[Removed]')
-      .map(a => ({
-        title:       a.title,
-        source:      a.source_name || '',
-        publishedAt: a.pubDate || null,
-      }));
-    newsCache = { articles, fetchedAt: now };
-    res.json({ articles });
-  } catch (err) {
-    console.error('News fetch error:', err.message);
-    res.status(500).json({ error: err.message });
-  }
+// ── News config — key served to client so browser fetches news directly ───────
+// (newsdata.io blocks requests from cloud/datacenter IPs on free tier)
+app.get('/api/newsconfig', (req, res) => {
+  res.set('Cache-Control', 's-maxage=3600');
+  res.json({ key: NEWSDATA_API_KEY });
 });
 // ─────────────────────────────────────────────────────────────────────────────
 

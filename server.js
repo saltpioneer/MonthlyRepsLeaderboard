@@ -186,26 +186,25 @@ function getSentiment(text) {
 }
 
 app.get('/api/news', async (req, res) => {
+  // Tell Vercel's CDN to cache this response for 10 minutes — prevents
+  // serverless cold starts from hammering the newsdata.io free-tier limit.
+  res.set('Cache-Control', 's-maxage=600, stale-while-revalidate=60');
   try {
     const now = Date.now();
     if (now - newsCache.fetchedAt < NEWS_CACHE_TTL && newsCache.articles.length) {
       return res.json({ articles: newsCache.articles });
     }
-    const q = encodeURIComponent('solar rebate OR solar panel OR renewable energy OR Solar Victoria');
-    const url = `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_API_KEY}&q=${q}&language=en&country=au&size=10`;
+    const q = encodeURIComponent('solar rebate OR solar incentive OR solar policy OR solar industry OR energy policy Australia OR solar installer OR government solar');
+    const url = `https://newsdata.io/api/1/latest?apikey=${NEWSDATA_API_KEY}&q=${q}&language=en&size=10`;
     const r = await fetch(url);
     const data = await r.json();
     if (data.status !== 'success') throw new Error(data.message || 'Newsdata error');
-
-    // Map API sentiment (positive/negative/neutral) → bullish/bearish/neutral
-    const sentimentMap = { positive: 'bullish', negative: 'bearish', neutral: 'neutral' };
 
     const articles = (data.results || [])
       .filter(a => a.title && a.title !== '[Removed]')
       .map(a => ({
         title:       a.title,
         source:      a.source_name || '',
-        sentiment:   sentimentMap[a.sentiment] || getSentiment(a.title),
         publishedAt: a.pubDate || null,
       }));
     newsCache = { articles, fetchedAt: now };

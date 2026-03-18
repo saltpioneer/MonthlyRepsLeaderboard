@@ -575,10 +575,10 @@
     }
 
     .solar-panel-timestamp {
-      font-size: 0.72rem;
-      font-weight: 500;
+      font-size: 0.82rem;
+      font-weight: 600;
       font-family: "SF Mono", "Fira Code", "Consolas", monospace;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.6);
       letter-spacing: 0.05em;
     }
 
@@ -606,23 +606,22 @@
     }
 
     .solar-source {
-      font-size: 0.7rem;
+      font-size: 0.9rem;
       font-weight: 700;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      margin-bottom: 14px;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 18px;
       font-family: "SF Mono", "Fira Code", "Consolas", monospace;
     }
 
     .solar-headline {
-      font-size: 2.1rem;
-      font-weight: 700;
-      color: #f0f0f0;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-      margin-bottom: 20px;
-      max-width: 90%;
+      font-size: 3rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      max-width: 95%;
       transition: opacity 0.5s ease, transform 0.5s ease;
     }
 
@@ -630,25 +629,6 @@
       opacity: 0;
       transform: translateY(8px);
     }
-
-    .solar-sentiment {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 20px;
-      border-radius: 6px;
-      font-size: 1.0rem;
-      font-weight: 900;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      transition: opacity 0.5s ease;
-    }
-
-    .solar-sentiment.fading { opacity: 0; }
-
-    .sentiment-bullish { background: rgba(34,197,94,0.12);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
-    .sentiment-bearish { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
-    .sentiment-neutral { background: rgba(156,163,175,0.10); color: #9ca3af; border: 1px solid rgba(156,163,175,0.25); }
 
     .solar-progress {
       position: absolute;
@@ -702,9 +682,9 @@
     .solar-sub-ticker-track:empty { display: none; }
 
     .solar-sub-ticker-item {
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: rgba(229,231,235,0.7);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #ffffff;
       letter-spacing: 0.01em;
     }
 
@@ -793,7 +773,6 @@
   <div class="solar-feature" id="solar-feature">
     <div class="solar-source" id="solar-source">LOADING...</div>
     <div class="solar-headline" id="solar-headline">Fetching solar market intelligence...</div>
-    <div class="solar-sentiment sentiment-neutral" id="solar-sentiment">— NEUTRAL</div>
     <div class="solar-progress" id="solar-progress"></div>
   </div>
   <div class="solar-sub-ticker">
@@ -1133,27 +1112,16 @@
 
   function showSolarArticle(idx) {
     if (!solarArticles.length) return;
-    const article = solarArticles[idx % solarArticles.length];
-    const headline  = document.getElementById('solar-headline');
-    const sentiment = document.getElementById('solar-sentiment');
-    const source    = document.getElementById('solar-source');
-    const progress  = document.getElementById('solar-progress');
-    if (!headline || !sentiment || !source) return;
+    const article  = solarArticles[idx % solarArticles.length];
+    const headline = document.getElementById('solar-headline');
+    const source   = document.getElementById('solar-source');
+    const progress = document.getElementById('solar-progress');
+    if (!headline || !source) return;
 
     headline.classList.add('fading');
-    sentiment.classList.add('fading');
 
     setTimeout(() => {
       headline.textContent = article.title;
-
-      const sentimentMap = {
-        bullish: { label: 'BULLISH ▲', cls: 'sentiment-bullish' },
-        bearish: { label: 'BEARISH ▼', cls: 'sentiment-bearish' },
-        neutral: { label: 'NEUTRAL —',  cls: 'sentiment-neutral' },
-      };
-      const s = sentimentMap[article.sentiment] || sentimentMap.neutral;
-      sentiment.textContent = s.label;
-      sentiment.className   = `solar-sentiment ${s.cls}`;
 
       const pubDate = article.publishedAt
         ? new Date(article.publishedAt).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
@@ -1163,7 +1131,6 @@
         : pubDate;
 
       headline.classList.remove('fading');
-      sentiment.classList.remove('fading');
 
       if (progress) {
         progress.style.transition = 'none';
@@ -1184,11 +1151,10 @@
   function buildSubTicker(articles) {
     const track = document.getElementById('solar-sub-ticker-track');
     if (!track || !articles.length) return;
-    const inner = articles.map(a => {
-      const icon = a.sentiment === 'bullish' ? '▲' : a.sentiment === 'bearish' ? '▼' : '—';
-      return `<span class="solar-sub-ticker-item">${a.title}</span>` +
-             `<span class="solar-sub-ticker-sep">${icon}</span>`;
-    }).join('');
+    const inner = articles.map(a =>
+      `<span class="solar-sub-ticker-item">${a.title}</span>` +
+      `<span class="solar-sub-ticker-sep">◆</span>`
+    ).join('');
     track.innerHTML = inner + inner;
   }
 

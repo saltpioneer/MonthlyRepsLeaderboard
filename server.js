@@ -10,6 +10,7 @@ const NEWSDATA_API_KEY = process.env.NEWSDATAIO_API;
 const BASE_ID = 'appyS2wfnaZBRrhSV';
 const REPS_TABLE = 'tbl3huYeX0eQ7gPCM';
 const DEALS_TABLE = 'tblvCICpDQZ7o39Zq';
+const DEALS_VIEW = 'viwtCnF0gEQv2NHnl';
 const TIERS_TABLE = 'tbll3x6sptZVfBdg8';
 
 // ── Bonus config ─────────────────────────────────────────────
@@ -77,11 +78,11 @@ app.get('/api/leaderboard', async (req, res) => {
         `&filterByFormula=AND(NOT(IS_BEFORE({Deposit Date},"${weekStart}")),{Deposit Date}!="")` +
         `&fields[]=Reps&fields[]=Deposit+Date`
       ),
-      // Most recent deal ever — sorted by Deposit Date (field ID) descending
+      // Most recent uploaded deal — pull the first record from the Airtable view
+      // so the ticker matches the table's top-down ordering, including finance deals.
       fetchOneRecord(
         DEALS_TABLE,
-        `&filterByFormula={Deposit Date}!=""` +
-        `&sort%5B0%5D%5Bfield%5D=fld5QxFIYCKvXxLac&sort%5B0%5D%5Bdirection%5D=desc` +
+        `&view=${DEALS_VIEW}` +
         `&fields%5B%5D=Reps&fields%5B%5D=Deposit+Date` +
         `&fields%5B%5D=Deal+Value+%28Selling+Price%29` +
         `&fields%5B%5D=Gross+Comms+%28Above+Base+Price%29`
@@ -127,7 +128,7 @@ app.get('/api/leaderboard', async (req, res) => {
           const f = rep.fields;
           latestDeal = {
             repName: (f['First Name'] || '').trim(),
-            closedAt: latestDealRecord.fields['Deposit Date'], // YYYY-MM-DD
+            closedAt: latestDealRecord.createdTime, // Airtable upload time
             salePrice: latestDealRecord.fields['Deal Value (Selling Price)']       ?? null,
             comms:     latestDealRecord.fields['Gross Comms (Above Base Price)']   ?? null,
           };

@@ -361,6 +361,18 @@
 
     tbody td.center { text-align: center; }
 
+    tbody td.rank-cell {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    tbody td.tier-col {
+      overflow: visible;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
     /* position number */
     .pos {
       font-size: 2rem;
@@ -369,6 +381,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      min-width: 1.35em;
       line-height: 1;
       vertical-align: middle;
     }
@@ -889,14 +902,15 @@
               const bonus    = BONUS_WEEK && row.bonusAchieved
                 ? `<span class="bonus-badge">Bonus ✓</span>`
                 : '';
-              const rankEmoji = i === 0 ? '🏆' : i === 1 ? '2️⃣' : i === 2 ? '3️⃣' : '';
+              const isArush = (row.name || '').trim().toLowerCase() === 'arush';
+              const rankEmoji = i === 0 ? (isArush ? '🐐' : '🏆') : i === 1 ? '2️⃣' : i === 2 ? '3️⃣' : '';
               const nameClass = i === 0 ? 'name-text gold-glow'
                               : i === 1 ? 'name-text gold'
                               : i === 2 ? 'name-text bronze'
                               : 'name-text';
               return `
                 <tr data-id="${row.id}"${i === 0 ? ' class="rank-first"' : ''}>
-                  <td><span class="pos ${posClass}">${rankEmoji || i + 1}</span></td>
+                  <td class="rank-cell"><span class="pos ${posClass}">${rankEmoji || i + 1}</span></td>
                   <td>
                     <div class="name-cell">
                       <span class="${nameClass}">${row.name}</span>
@@ -905,7 +919,7 @@
                   </td>
                   <td class="center ${wkClass}">${row.weeklyDeals}<span class="deal-unit">/w</span></td>
                   <td class="center">${row.monthlyDeals}<span class="deal-unit">/m</span></td>
-                  <td class="center">
+                  <td class="center tier-col">
                     <div class="tier-cell">
                       <span class="tier-badge ${tClass}">${row.tierName}</span>
                     </div>

@@ -58,12 +58,20 @@ async function fetchOneRecord(tableId, params = '') {
   return data.records && data.records[0] || null;
 }
 
+async function fetchPageRecords(tableId, pageSize, params = '') {
+  const url = `${AIRTABLE_BASE}/${tableId}?pageSize=${pageSize}${params}`;
+  const res = await fetch(url, { headers: HEADERS });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.records || [];
+}
+
 app.get('/api/leaderboard', async (req, res) => {
   try {
     const weekStart = getWeekStart();
 
     // Fetch tiers, reps, weekly deals, and most recent deal in parallel
-    const [tierRecords, repRecords, weekDeals, latestDealRecord] = await Promise.all([
+    const [tierRecords, repRecords, weekDeals, latestDealRecords] = await Promise.all([
       fetchAllRecords(TIERS_TABLE, '&fields[]=Tier+Name&fields[]=Commission+Percentage'),
       fetchAllRecords(
         REPS_TABLE,
@@ -78,12 +86,16 @@ app.get('/api/leaderboard', async (req, res) => {
         `&filterByFormula=AND(NOT(IS_BEFORE({Deposit Date},"${weekStart}")),{Deposit Date}!="")` +
         `&fields[]=Reps&fields[]=Deposit+Date`
       ),
-      // Most recent uploaded deal — pull the first record from the Airtable view
-      // so the ticker matches the table's top-down ordering, including finance deals.
-      fetchOneRecord(
+      // Most recent uploaded deal — sort explicitly by Airtable's record-created
+      // timestamp field so the ticker always shows the newest row first.
+      fetchPageRecords(
         DEALS_TABLE,
+        10,
         `&view=${DEALS_VIEW}` +
+        `&sort%5B0%5D%5Bfield%5D=Record+Created+Time` +
+        `&sort%5B0%5D%5Bdirection%5D=desc` +
         `&fields%5B%5D=Reps&fields%5B%5D=Deposit+Date` +
+        `&fields%5B%5D=Record+Created+Time` +
         `&fields%5B%5D=Deal+Value+%28Selling+Price%29` +
         `&fields%5B%5D=Gross+Comms+%28Above+Base+Price%29`
       ),
@@ -106,9 +118,9 @@ app.get('/api/leaderboard', async (req, res) => {
       }
     }
 
-    // Most recent deal ever — resolved from latestDealRecord
+    // Most recent deal ever — pick the first recent record with a valid linked rep
     let latestDeal = null;
-    if (latestDealRecord) {
+    for (const latestDealRecord of latestDealRecords) {
       const repId = (latestDealRecord.fields['Reps'] || [])[0];
       if (repId) {
         // Try active reps list first; fall back to a direct record fetch
@@ -127,11 +139,12 @@ app.get('/api/leaderboard', async (req, res) => {
         if (rep) {
           const f = rep.fields;
           latestDeal = {
-            repName: (f['First Name'] || '').trim(),
-            closedAt: latestDealRecord.createdTime, // Airtable upload time
+            repName: (f['First Name'] || 'Latest Close').trim(),
+            closedAt: latestDealRecord.fields['Record Created Time'] || latestDealRecord.createdTime,
             salePrice: latestDealRecord.fields['Deal Value (Selling Price)']       ?? null,
             comms:     latestDealRecord.fields['Gross Comms (Above Base Price)']   ?? null,
           };
+          break;
         }
       }
     }
